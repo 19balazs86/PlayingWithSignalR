@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PlayingWithSignalR.Hubs;
 
 namespace PlayingWithSignalR
 {
@@ -17,11 +18,15 @@ namespace PlayingWithSignalR
     public void ConfigureServices(IServiceCollection services)
     {
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+
+      services.AddSignalR(options => options.EnableDetailedErrors = true);
     }
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
       if (env.IsDevelopment())
         app.UseDeveloperExceptionPage();
+
+      app.UseSignalR(builder => builder.MapHub<MessageHub>("/messages"));
 
       app.UseMvc();
     }

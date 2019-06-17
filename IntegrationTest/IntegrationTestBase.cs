@@ -10,15 +10,19 @@ namespace IntegrationTest
 {
   public class IntegrationTestBase : IClassFixture<WebApiFactory>
   {
-    private readonly WebApiFactory _factory;
+    private readonly WebApiFactory _webApiFactory;
 
-    protected HttpClient _httpClient => _factory.HttpClient;
+    protected HttpClient _httpClient => _webApiFactory.HttpClient;
 
-    protected TestServer _testServer => _factory.Server;
+    protected TestServer _testServer => _webApiFactory.Server;
+
+    protected UserModel _testUser { get => _webApiFactory.TestUser; set => _webApiFactory.TestUser = value; }
 
     public IntegrationTestBase(WebApiFactory factory)
     {
-      _factory = factory;
+      _webApiFactory = factory;
+
+      _testUser = null;
     }
 
     protected virtual async Task<HubConnection> getHubConnectionAsync(string hubName, UserModel user)

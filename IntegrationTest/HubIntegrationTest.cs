@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using PlayingWithSignalR.Hubs;
@@ -17,17 +18,22 @@ namespace IntegrationTest
     {
       // Arrange
       const string messageToSend = "Hello World!";
-      string messageToReceive    = null;
+      Message messageToReceive    = null;
 
-      HubConnection connection = await getHubConnectionAsync(TestUsers.User1);
+      UserModel user = TestUsers.User1;
 
-      connection.On<string>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
+      HubConnection connection = await getHubConnectionAsync(user);
+
+      connection.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
 
       // Act
       await connection.InvokeAsync(nameof(IMessageHub.SendMessageToAll), messageToSend);
 
       // Assert
-      Assert.Equal(messageToSend, messageToReceive);
+      Assert.NotNull(messageToReceive);
+      Assert.Equal(messageToSend, messageToReceive.Text);
+      Assert.Equal(user.Id, Guid.Parse(messageToReceive.UserId));
+      Assert.Equal(user.Name, messageToReceive.UserName);
     }
 
     private Task<HubConnection> getHubConnectionAsync(UserModel user)

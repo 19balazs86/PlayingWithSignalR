@@ -17,6 +17,8 @@ namespace PlayingWithSignalR.Hubs
     {
       string connId = Context.ConnectionId;
 
+      //await Clients.Client(connId).ReceiveMessage(msg);
+
       return base.OnConnectedAsync();
     }
 

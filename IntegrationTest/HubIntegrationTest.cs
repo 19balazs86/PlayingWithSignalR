@@ -49,16 +49,20 @@ namespace IntegrationTest
       UserModel user2 = TestUsers.User2;
 
       HubConnection connection1 = await getHubConnectionAsync(user1);
-      HubConnection connection2 = await getHubConnectionAsync(user2);
+      HubConnection connection2_1 = await getHubConnectionAsync(user2);
+      HubConnection connection2_2 = await getHubConnectionAsync(user2);
 
       connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++);
-      connection2.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
+      connection2_1.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
+      connection2_2.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++);
 
-      // Act: User1 send private message to User2.
+      // Act: User1 send a private message to User2, who has 2 connections.
       await connection1.InvokeAsync(nameof(IMessageHub.SendPrivateMessage), user2.Id, messageToSend);
 
+      await Task.Delay(100); // Waiting for the message to arrive.
+
       // Assert
-      Assert.Equal(0, counter);
+      Assert.Equal(1, counter); // User1 did not get message.
       Assert.NotNull(messageToReceive);
       Assert.Equal(messageToSend, messageToReceive.Text);
       Assert.Equal(user1.Id, messageToReceive.UserId);

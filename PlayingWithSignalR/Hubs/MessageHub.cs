@@ -35,5 +35,18 @@ namespace PlayingWithSignalR.Hubs
       //await Clients.All.SendAsync("ReceiveMessage", msg);
       await Clients.All.ReceiveMessage(msg);
     }
+
+    public async Task SendPrivateMessage(Guid userId, string message)
+    {
+      Message msg = new Message
+      {
+        UserId    = Context.UserIdentifier,
+        UserName  = Context.User.Identity.Name,
+        Text      = message,
+        IsPrivate = true
+      };
+
+      await Clients.User(userId.ToString()).ReceiveMessage(msg);
+    }
   }
 }

@@ -19,6 +19,8 @@ namespace PlayingWithSignalR
     {
       services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
+      services.AddJwtAuthentication();
+
       services.AddSignalR(options => options.EnableDetailedErrors = true);
     }
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -26,7 +28,11 @@ namespace PlayingWithSignalR
       if (env.IsDevelopment())
         app.UseDeveloperExceptionPage();
 
-      app.UseSignalR(builder => builder.MapHub<MessageHub>("/messages"));
+      //app.UseSignalRClientMiddleware();
+
+      app.UseAuthentication();
+
+      app.UseSignalR(builder => builder.MapHub<MessageHub>(MessageHub.Path));
 
       app.UseMvc();
     }

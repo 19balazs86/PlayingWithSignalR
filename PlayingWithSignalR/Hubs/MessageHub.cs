@@ -13,7 +13,7 @@ namespace PlayingWithSignalR.Hubs
 
     public override Task OnConnectedAsync()
     {
-      var id = Context.ConnectionId;
+      string connId = Context.ConnectionId;
 
       return base.OnConnectedAsync();
     }

@@ -1,4 +1,6 @@
 using System;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using PlayingWithSignalR.Hubs;
@@ -64,6 +66,36 @@ namespace IntegrationTest
       Assert.Equal(user1.Id, Guid.Parse(messageToReceive.UserId));
       Assert.Equal(user1.Name, messageToReceive.UserName);
       Assert.True(messageToReceive.IsPrivate);
+    }
+
+    [Fact]
+    public async Task NotificationController()
+    {
+      // Arrange
+      _testUser = TestUsers.User1;
+
+      Notification notification = new Notification { Message = "SendNotification" };
+
+      int counter = 0;
+      Message messageToReceive = null;
+
+      HubConnection connection1 = await getHubConnectionAsync(TestUsers.User1);
+      HubConnection connection2 = await getHubConnectionAsync(TestUsers.User2);
+
+      connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++);
+      connection2.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
+
+      // Act
+      HttpResponseMessage response = await _httpClient.PostAsJsonAsync("Notification", notification);
+
+      // Assert
+      Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+      Assert.Equal(1, counter);
+      Assert.NotNull(messageToReceive);
+      Assert.Equal(notification.Message, messageToReceive.Text);
+      Assert.Equal(_testUser.Id, Guid.Parse(messageToReceive.UserId));
+      Assert.Equal(_testUser.Name, messageToReceive.UserName);
+      Assert.False(messageToReceive.IsPrivate);
     }
 
     private Task<HubConnection> getHubConnectionAsync(UserModel user)

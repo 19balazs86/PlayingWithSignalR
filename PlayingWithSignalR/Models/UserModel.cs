@@ -18,6 +18,8 @@ namespace PlayingWithSignalR.Models
       Roles = roles;
     }
 
+    public UserModel(Guid id, string name) : this(id, name, Enumerable.Empty<string>()) {  }
+
     public UserModel(IEnumerable<Claim> claims)
     {
       List<string> roles = new List<string>();

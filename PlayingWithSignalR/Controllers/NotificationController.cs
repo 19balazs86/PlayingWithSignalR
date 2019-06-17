@@ -28,7 +28,7 @@ namespace PlayingWithSignalR.Controllers
 
       Message msg = new Message
       {
-        UserId   = user.Id.ToString(),
+        UserId   = user.Id,
         UserName = user.Name,
         Text     = notification.Message
       };

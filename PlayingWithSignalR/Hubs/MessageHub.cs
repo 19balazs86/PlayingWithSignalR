@@ -11,6 +11,8 @@ namespace PlayingWithSignalR.Hubs
   {
     public const string Path = "/hub/messages";
 
+    private Guid _userIdentifier => Guid.Parse(Context.UserIdentifier);
+
     public override Task OnConnectedAsync()
     {
       string connId = Context.ConnectionId;
@@ -27,7 +29,7 @@ namespace PlayingWithSignalR.Hubs
     {
       Message msg = new Message
       {
-        UserId   = Context.UserIdentifier,
+        UserId   = _userIdentifier,
         UserName = Context.User.Identity.Name,
         Text     = message
       };
@@ -40,7 +42,7 @@ namespace PlayingWithSignalR.Hubs
     {
       Message msg = new Message
       {
-        UserId    = Context.UserIdentifier,
+        UserId    = _userIdentifier,
         UserName  = Context.User.Identity.Name,
         Text      = message,
         IsPrivate = true

@@ -1,5 +1,3 @@
-using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -34,7 +32,7 @@ namespace IntegrationTest
       // Assert
       Assert.NotNull(messageToReceive);
       Assert.Equal(messageToSend, messageToReceive.Text);
-      Assert.Equal(user.Id, Guid.Parse(messageToReceive.UserId));
+      Assert.Equal(user.Id, messageToReceive.UserId);
       Assert.Equal(user.Name, messageToReceive.UserName);
       Assert.False(messageToReceive.IsPrivate);
     }
@@ -56,14 +54,14 @@ namespace IntegrationTest
       connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++);
       connection2.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
 
-      // Act
+      // Act: User1 send private message to User2.
       await connection1.InvokeAsync(nameof(IMessageHub.SendPrivateMessage), user2.Id, messageToSend);
 
       // Assert
       Assert.Equal(0, counter);
       Assert.NotNull(messageToReceive);
       Assert.Equal(messageToSend, messageToReceive.Text);
-      Assert.Equal(user1.Id, Guid.Parse(messageToReceive.UserId));
+      Assert.Equal(user1.Id, messageToReceive.UserId);
       Assert.Equal(user1.Name, messageToReceive.UserName);
       Assert.True(messageToReceive.IsPrivate);
     }
@@ -85,15 +83,15 @@ namespace IntegrationTest
       connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++);
       connection2.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
 
-      // Act
+      // Act: User1 initiates an HTTP call to send a notification for everyone.
       HttpResponseMessage response = await _httpClient.PostAsJsonAsync("Notification", notification);
 
       // Assert
-      Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+      Assert.True(response.IsSuccessStatusCode);
       Assert.Equal(1, counter);
       Assert.NotNull(messageToReceive);
       Assert.Equal(notification.Message, messageToReceive.Text);
-      Assert.Equal(_testUser.Id, Guid.Parse(messageToReceive.UserId));
+      Assert.Equal(_testUser.Id, messageToReceive.UserId);
       Assert.Equal(_testUser.Name, messageToReceive.UserName);
       Assert.False(messageToReceive.IsPrivate);
     }

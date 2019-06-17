@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using PlayingWithSignalR.Models;
 
 namespace PlayingWithSignalR.Hubs
 {
@@ -24,8 +25,15 @@ namespace PlayingWithSignalR.Hubs
 
     public async Task SendMessageToAll(string message)
     {
-      //await Clients.All.SendAsync("ReceiveMessage", message);
-      await Clients.All.ReceiveMessage(message);
+      Message msg = new Message
+      {
+        UserId   = Context.UserIdentifier,
+        UserName = Context.User.Identity.Name,
+        Text     = message
+      };
+
+      //await Clients.All.SendAsync("ReceiveMessage", msg);
+      await Clients.All.ReceiveMessage(msg);
     }
   }
 }

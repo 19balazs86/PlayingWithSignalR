@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
+using PlayingWithSignalR.Models;
 
 namespace PlayingWithSignalR.Hubs
 {
   public interface IMessageClient
   {
-    Task ReceiveMessage(string message);
+    Task ReceiveMessage(Message message);
   }
 }

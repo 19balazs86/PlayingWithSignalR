@@ -1,14 +1,13 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR.Client;
 using PlayingWithSignalR.Hubs;
+using PlayingWithSignalR.Models;
 using Xunit;
 
 namespace IntegrationTest
 {
   public class HubIntegrationTest : IntegrationTestBase
   {
-    private const string _hubName = "messages";
-
     public HubIntegrationTest(WebApiFactory factory) : base(factory)
     {
     }
@@ -20,7 +19,7 @@ namespace IntegrationTest
       const string messageToSend = "Hello World!";
       string messageToReceive    = null;
 
-      HubConnection connection = await getHubConnectionAsync();
+      HubConnection connection = await getHubConnectionAsync(TestUsers.User1);
 
       connection.On<string>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
 
@@ -31,7 +30,7 @@ namespace IntegrationTest
       Assert.Equal(messageToSend, messageToReceive);
     }
 
-    private Task<HubConnection> getHubConnectionAsync()
-      => getHubConnectionAsync(_hubName);
+    private Task<HubConnection> getHubConnectionAsync(UserModel user)
+      => getHubConnectionAsync(MessageHub.Path, user);
   }
 }

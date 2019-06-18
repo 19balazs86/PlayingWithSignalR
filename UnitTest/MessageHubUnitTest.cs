@@ -42,7 +42,7 @@ namespace UnitTest
         .Verifiable();
 
       // Create MessageHub
-      SUT = new MessageHub()
+      SUT = new MessageHub
       {
         Clients = _mockClients.Object,
         Context = _mockHubContext.Object
@@ -56,8 +56,8 @@ namespace UnitTest
       await SUT.SendMessageToAll(_messageText);
 
       // Assert
-      _mockMessageClient.Verify(messageClient =>
-        messageClient.ReceiveMessage(It.Is<Message>(m => checkMessage(m, false))), Times.Once);
+      _mockMessageClient.Verify(mc =>
+        mc.ReceiveMessage(It.Is<Message>(m => checkMessage(m, false))), Times.Once);
     }
 
     [Fact]
@@ -73,8 +73,8 @@ namespace UnitTest
       await SUT.SendPrivateMessage(toUserId, _messageText);
 
       // Assert
-      _mockMessageClient.Verify(messageClient =>
-        messageClient.ReceiveMessage(It.Is<Message>(m => checkMessage(m, true))), Times.Once);
+      _mockMessageClient.Verify(mc =>
+        mc.ReceiveMessage(It.Is<Message>(m => checkMessage(m, true))), Times.Once);
     }
 
     private bool checkMessage(Message m, bool isPrivate)

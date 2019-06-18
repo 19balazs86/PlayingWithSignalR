@@ -14,26 +14,31 @@ namespace IntegrationTest
     }
 
     [Fact]
-    public async Task ReceiveMessage()
+    public async Task SendMessageToAll()
     {
       // Arrange
+      int counter = 0;
       const string messageToSend = "Hello World!";
-      Message messageToReceive    = null;
+      Message messageToReceive   = null;
 
-      UserModel user = TestUsers.User1;
+      UserModel user1 = TestUsers.User1;
+      UserModel user2 = TestUsers.User2;
 
-      HubConnection connection = await getHubConnectionAsync(user);
+      HubConnection connection1 = await getHubConnectionAsync(user1);
+      HubConnection connection2 = await getHubConnectionAsync(user2);
 
-      connection.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
+      connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
+      connection2.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++);
 
       // Act
-      await connection.InvokeAsync(nameof(IMessageHub.SendMessageToAll), messageToSend);
+      await connection1.InvokeAsync(nameof(IMessageHub.SendMessageToAll), messageToSend);
 
       // Assert
+      Assert.Equal(1, counter);
       Assert.NotNull(messageToReceive);
       Assert.Equal(messageToSend, messageToReceive.Text);
-      Assert.Equal(user.Id, messageToReceive.UserId);
-      Assert.Equal(user.Name, messageToReceive.UserName);
+      Assert.Equal(user1.Id, messageToReceive.UserId);
+      Assert.Equal(user1.Name, messageToReceive.UserName);
       Assert.False(messageToReceive.IsPrivate);
     }
 
@@ -48,7 +53,7 @@ namespace IntegrationTest
       UserModel user1 = TestUsers.User1;
       UserModel user2 = TestUsers.User2;
 
-      HubConnection connection1 = await getHubConnectionAsync(user1);
+      HubConnection connection1   = await getHubConnectionAsync(user1);
       HubConnection connection2_1 = await getHubConnectionAsync(user2);
       HubConnection connection2_2 = await getHubConnectionAsync(user2);
 

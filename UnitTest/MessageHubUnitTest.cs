@@ -12,11 +12,11 @@ namespace UnitTest
   {
     private readonly Mock<IHubCallerClients<IMessageClient>> _mockClients;
     private readonly Mock<IMessageClient> _mockMessageClient;
-    private readonly Mock<HubCallerContext> _mockHubContext;
+    private readonly Mock<HubCallerContext> _mockContext;
 
     private const string _messageText = "Hello World!";
     private const string _callerName  = "Sender Name";
-    private Guid _callerId            = Guid.NewGuid();
+    private readonly Guid _callerId   = Guid.NewGuid();
 
     private readonly MessageHub SUT;
 
@@ -25,16 +25,16 @@ namespace UnitTest
       // Create mock objects.
       _mockClients       = new Mock<IHubCallerClients<IMessageClient>>(MockBehavior.Strict);
       _mockMessageClient = new Mock<IMessageClient>(MockBehavior.Strict);
-      _mockHubContext    = new Mock<HubCallerContext>(MockBehavior.Strict);
+      _mockContext       = new Mock<HubCallerContext>(MockBehavior.Strict);
 
       // Default arrange
       _mockClients.Setup(clients => clients.All)
         .Returns(_mockMessageClient.Object);
 
-      _mockHubContext.Setup(c => c.UserIdentifier)
+      _mockContext.Setup(c => c.UserIdentifier)
        .Returns(_callerId.ToString());
 
-      _mockHubContext.Setup(c => c.User.Identity.Name)
+      _mockContext.Setup(c => c.User.Identity.Name)
         .Returns(_callerName);
 
       _mockMessageClient.Setup(mc => mc.ReceiveMessage(It.IsAny<Message>()))
@@ -45,7 +45,7 @@ namespace UnitTest
       SUT = new MessageHub
       {
         Clients = _mockClients.Object,
-        Context = _mockHubContext.Object
+        Context = _mockContext.Object
       };
     }
 

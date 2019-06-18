@@ -9,6 +9,8 @@ namespace IntegrationTest
 {
   public class HubIntegrationTest : IntegrationTestBase
   {
+    private const string _messageToSend = "Hello World!";
+
     public HubIntegrationTest(WebApiFactory factory) : base(factory)
     {
     }
@@ -18,28 +20,24 @@ namespace IntegrationTest
     {
       // Arrange
       int counter = 0;
-      const string messageToSend = "Hello World!";
-      Message messageToReceive   = null;
+      Message receivedMessage = null;
 
-      UserModel user1 = TestUsers.User1;
-      UserModel user2 = TestUsers.User2;
+      HubConnection connection1 = await getHubConnectionAsync(TestUsers.User1);
+      HubConnection connection2 = await getHubConnectionAsync(TestUsers.User2);
 
-      HubConnection connection1 = await getHubConnectionAsync(user1);
-      HubConnection connection2 = await getHubConnectionAsync(user2);
-
-      connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
-      connection2.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++);
+      connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => receivedMessage = msg);
+      connection2.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++); // +1
 
       // Act
-      await connection1.InvokeAsync(nameof(IMessageHub.SendMessageToAll), messageToSend);
+      await connection1.InvokeAsync(nameof(IMessageHub.SendMessageToAll), _messageToSend);
 
       // Assert
       Assert.Equal(1, counter);
-      Assert.NotNull(messageToReceive);
-      Assert.Equal(messageToSend, messageToReceive.Text);
-      Assert.Equal(user1.Id, messageToReceive.UserId);
-      Assert.Equal(user1.Name, messageToReceive.UserName);
-      Assert.False(messageToReceive.IsPrivate);
+      Assert.NotNull(receivedMessage);
+      Assert.Equal(_messageToSend, receivedMessage.Text);
+      Assert.Equal(TestUsers.User1.Id, receivedMessage.UserId);
+      Assert.Equal(TestUsers.User1.Name, receivedMessage.UserName);
+      Assert.False(receivedMessage.IsPrivate);
     }
 
     [Fact]
@@ -47,32 +45,28 @@ namespace IntegrationTest
     {
       // Arrange
       int counter = 0;
-      const string messageToSend = "Hello World!";
-      Message messageToReceive   = null;
+      Message receivedMessage = null;
 
-      UserModel user1 = TestUsers.User1;
-      UserModel user2 = TestUsers.User2;
+      HubConnection connection1   = await getHubConnectionAsync(TestUsers.User1);
+      HubConnection connection2_1 = await getHubConnectionAsync(TestUsers.User2);
+      HubConnection connection2_2 = await getHubConnectionAsync(TestUsers.User2);
 
-      HubConnection connection1   = await getHubConnectionAsync(user1);
-      HubConnection connection2_1 = await getHubConnectionAsync(user2);
-      HubConnection connection2_2 = await getHubConnectionAsync(user2);
-
-      connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++);
-      connection2_1.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
-      connection2_2.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++);
+      connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++); // +0.
+      connection2_1.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => receivedMessage = msg);
+      connection2_2.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++); // +1
 
       // Act: User1 send a private message to User2, who has 2 connections.
-      await connection1.InvokeAsync(nameof(IMessageHub.SendPrivateMessage), user2.Id, messageToSend);
+      await connection1.InvokeAsync(nameof(IMessageHub.SendPrivateMessage), TestUsers.User2.Id, _messageToSend);
 
       await Task.Delay(100); // Waiting for the message to arrive.
 
       // Assert
       Assert.Equal(1, counter); // User1 did not get message.
-      Assert.NotNull(messageToReceive);
-      Assert.Equal(messageToSend, messageToReceive.Text);
-      Assert.Equal(user1.Id, messageToReceive.UserId);
-      Assert.Equal(user1.Name, messageToReceive.UserName);
-      Assert.True(messageToReceive.IsPrivate);
+      Assert.NotNull(receivedMessage);
+      Assert.Equal(_messageToSend, receivedMessage.Text);
+      Assert.Equal(TestUsers.User1.Id, receivedMessage.UserId);
+      Assert.Equal(TestUsers.User1.Name, receivedMessage.UserName);
+      Assert.True(receivedMessage.IsPrivate);
     }
 
     [Fact]
@@ -81,16 +75,16 @@ namespace IntegrationTest
       // Arrange
       _testUser = TestUsers.User1;
 
-      Notification notification = new Notification { Message = "SendNotification" };
+      Notification notification = new Notification { Message = _messageToSend };
 
       int counter = 0;
-      Message messageToReceive = null;
+      Message receivedMessage = null;
 
       HubConnection connection1 = await getHubConnectionAsync(TestUsers.User1);
       HubConnection connection2 = await getHubConnectionAsync(TestUsers.User2);
 
-      connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++);
-      connection2.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => messageToReceive = msg);
+      connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++); // +1
+      connection2.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => receivedMessage = msg);
 
       // Act: User1 initiates an HTTP call to send a notification for everyone.
       HttpResponseMessage response = await _httpClient.PostAsJsonAsync("Notification", notification);
@@ -98,11 +92,11 @@ namespace IntegrationTest
       // Assert
       Assert.True(response.IsSuccessStatusCode);
       Assert.Equal(1, counter);
-      Assert.NotNull(messageToReceive);
-      Assert.Equal(notification.Message, messageToReceive.Text);
-      Assert.Equal(_testUser.Id, messageToReceive.UserId);
-      Assert.Equal(_testUser.Name, messageToReceive.UserName);
-      Assert.False(messageToReceive.IsPrivate);
+      Assert.NotNull(receivedMessage);
+      Assert.Equal(notification.Message, receivedMessage.Text);
+      Assert.Equal(_testUser.Id, receivedMessage.UserId);
+      Assert.Equal(_testUser.Name, receivedMessage.UserName);
+      Assert.False(receivedMessage.IsPrivate);
     }
 
     private Task<HubConnection> getHubConnectionAsync(UserModel user)

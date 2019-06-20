@@ -66,7 +66,7 @@ namespace UnitTest
       Guid toUserId = Guid.NewGuid();
 
       // Arrange
-      _mockClients.Setup(clients => clients.User(It.Is<string>(userId => userId == toUserId.ToString())))
+      _mockClients.Setup(clients => clients.User(It.Is<string>(userId => Guid.Parse(userId) == toUserId)))
         .Returns(_mockMessageClient.Object);
 
       // Act

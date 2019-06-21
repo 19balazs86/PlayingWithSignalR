@@ -31,10 +31,10 @@ namespace UnitTest
       _mockClients.Setup(clients => clients.All)
         .Returns(_mockMessageClient.Object);
 
-      _mockContext.Setup(c => c.UserIdentifier)
+      _mockContext.SetupGet(c => c.UserIdentifier)
        .Returns(_callerId.ToString());
 
-      _mockContext.Setup(c => c.User.Identity.Name)
+      _mockContext.SetupGet(c => c.User.Identity.Name)
         .Returns(_callerName);
 
       _mockMessageClient.Setup(mc => mc.ReceiveMessage(It.IsAny<Message>()))

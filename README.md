@@ -32,11 +32,25 @@ public interface IMessageHub
 }
 ```
 
-#### UnitTest
+#### UnitTest (strongly typed Hub)
 - You can mock the strongly typed Hub easier and validate the object which you want to send to the clients.
 
 ```csharp
 _mockMessageClient.Verify(mc => mc.ReceiveMessage(It.Is<Message>(m => ..., Times.Once);
+```
+
+#### UnitTest (non strongly typed Hub)
+- It is still doable to verify the object which you send, just it is not as elegant as the strongly typed version.
+
+```csharp
+_mockClients.Verify(clients => clients.All, Times.Once);
+
+_mockClientProxy.Verify(clientProxy =>
+    clientProxy.SendCoreAsync(
+        "ReceiveMessage",
+        It.Is<object[]>(o => o != null && o.Length == 1 && checkMessage(o[0] as Message)),
+        It.IsAny<CancellationToken>()),
+    Times.Once);
 ```
 
 #### IntegrationTest

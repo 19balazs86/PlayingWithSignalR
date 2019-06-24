@@ -59,9 +59,9 @@ namespace IntegrationTest
       HubConnection connection2_1 = await getHubConnectionAsync(TestUsers.User2);
       HubConnection connection2_2 = await getHubConnectionAsync(TestUsers.User2);
 
-      connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++); // +0.
+      connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => Interlocked.Increment(ref counter)); // +0.
       connection2_1.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => receivedMessage = msg);
-      connection2_2.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => counter++); // +1
+      connection2_2.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => Interlocked.Increment(ref counter)); // +1
 
       // Act: User1 send a private message to User2, who has 2 connections.
       await connection1.InvokeAsync(nameof(IMessageHub.SendPrivateMessage), TestUsers.User2.Id, _messageToSend);

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Net.Http.Headers;
 
 namespace PlayingWithSignalR
 {
@@ -27,7 +29,7 @@ namespace PlayingWithSignalR
       if (request.Path.StartsWithSegments("/hub", StringComparison.OrdinalIgnoreCase) &&
           request.Query.TryGetValue("access_token", out var accessToken))
       {
-        request.Headers.Add("Authorization", $"Bearer {accessToken}");
+        request.Headers.Add(HeaderNames.Authorization, $"{JwtBearerDefaults.AuthenticationScheme} {accessToken}");
       }
 
       await _next(httpContext);

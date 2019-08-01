@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace PlayingWithSignalR
 {
@@ -7,12 +7,16 @@ namespace PlayingWithSignalR
   {
     public static void Main(string[] args)
     {
-      CreateWebHostBuilder(args).Build().Run();
+      CreateHostBuilder(args).Build().Run();
     }
 
-    public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-      WebHost
+    public static IHostBuilder CreateHostBuilder(string[] args)
+    {
+      return Host
         .CreateDefaultBuilder(args)
-        .UseStartup<Startup>();
+        .ConfigureWebHostDefaults(webHostBuilder =>
+          webHostBuilder
+            .UseStartup<Startup>());
+    }
   }
 }

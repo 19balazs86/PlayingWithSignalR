@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using PlayingWithSignalR.Hubs;
@@ -9,7 +8,6 @@ namespace PlayingWithSignalR.Controllers
 {
   [Route("[controller]")]
   [ApiController]
-  [Authorize]
   public class NotificationController : ControllerBase
   {
     private readonly IHubContext<MessageHub, IMessageClient> _messageHub;

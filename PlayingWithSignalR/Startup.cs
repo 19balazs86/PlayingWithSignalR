@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,11 +18,21 @@ namespace PlayingWithSignalR
     }
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+      services.AddControllers();
 
       services.AddJwtAuthentication();
 
       services.AddSignalR(options => options.EnableDetailedErrors = true);
+
+      services.AddAuthorization(options =>
+      {
+        // https://docs.microsoft.com/en-ie/aspnet/core/migration/22-to-30?view=aspnetcore-3.0&tabs=visual-studio#authorization
+        // FallbackPolicy is initially configured to allow requests without authorization.
+        // Override it to always require authentication on all endpoints except when [AllowAnonymous].
+        options.FallbackPolicy = new AuthorizationPolicyBuilder()
+          .RequireAuthenticatedUser()
+          .Build();
+      });
     }
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {

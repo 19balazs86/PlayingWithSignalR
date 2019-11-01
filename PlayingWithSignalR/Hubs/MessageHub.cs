@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using PlayingWithSignalR.Models;
 
 namespace PlayingWithSignalR.Hubs
 {
-  [Authorize]
   public class MessageHub : Hub<IMessageClient>, IMessageHub
   {
     public const string Path = "/hub/messages";

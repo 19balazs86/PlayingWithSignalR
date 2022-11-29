@@ -5,8 +5,9 @@ This .Net Core Web API is an example to build [SignalR](https://docs.microsoft.c
 [Separate branch](https://github.com/19balazs86/PlayingWithSignalR/tree/netcoreapp2.2) with the .NET Core 2.2 version.
 
 #### Resources
-- Some basic knowledge from CodeOpinion: [Practical ASP.NET Core SignalR](https://codeopinion.com/practical-asp-net-core-signalr/).
-- David Pine presentation (52min): [SignalR: To Chat and Beyond](https://www.youtube.com/watch?v=i3RXbOY6-0I).
+- [SignalR samples](https://github.com/aspnet/AzureSignalR-samples) *(GitHub)*
+- [Practical ASP.NET Core SignalR](https://codeopinion.com/practical-asp-net-core-signalr/) *(CodeOpinion)*
+- [SignalR: To Chat and Beyond](https://www.youtube.com/watch?v=i3RXbOY6-0I) *(David Pine presentation, 52min)*
 
 #### MessageHub
 - The web application has a very simple strongly typed Hub definition as `IMessageClient` and implements the `IMessageHub` interface.

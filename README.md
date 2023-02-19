@@ -1,18 +1,18 @@
 # Playing with SignalR
 
-This .Net Core Web API is an example to build [SignalR](https://docs.microsoft.com/en-ie/aspnet/core/signalr/introduction?view=aspnetcore-3.0) service from a back-end perspective.
+This is a .Net Web API example to build back-end [SignalR](https://docs.microsoft.com/en-ie/aspnet/core/signalr/introduction?view=aspnetcore-3.0) service.
 
 [Separate branch](https://github.com/19balazs86/PlayingWithSignalR/tree/netcoreapp2.2) with the .NET Core 2.2 version.
 
 #### Resources
-- [SignalR samples](https://github.com/aspnet/AzureSignalR-samples) *(GitHub)*
-- [Practical ASP.NET Core SignalR](https://codeopinion.com/practical-asp-net-core-signalr/) *(CodeOpinion)*
-- [SignalR: To Chat and Beyond](https://www.youtube.com/watch?v=i3RXbOY6-0I) *(David Pine presentation, 52min)*
+- [SignalR samples](https://github.com/aspnet/AzureSignalR-samples) 👤*aspnet*
+- [Practical ASP.NET Core SignalR](https://codeopinion.com/practical-asp-net-core-signalr) 📓*CodeOpinion*
+- [SignalR: To Chat and Beyond](https://www.youtube.com/watch?v=i3RXbOY6-0I) 📽️*52m - David Pine presentation*
 
 #### MessageHub
-- The web application has a very simple strongly typed Hub definition as `IMessageClient` and implements the `IMessageHub` interface.
-- Both interfaces make your things easier in order to implement the hub and write unit and integration tests.
-- Connect to the Hub needs to be authenticated, I used JWT for this purpose.
+- The web application has a simple and strongly-typed Hub definition named `IMessageClient`, which implements the `IMessageHub` interface.
+- Both interfaces make it easier to implement the hub and write unit and integration tests.
+- To connect to the Hub, authentication is required, and I have used JWT for this purpose.
 
 ```csharp
 [Authorize]
@@ -36,14 +36,14 @@ public interface IMessageHub
 ```
 
 #### UnitTest (strongly typed Hub)
-- You can mock the strongly typed Hub easier and validate the object which you want to send to the clients.
+- Mocking the strongly typed Hub becomes easier, allowing you to validate the object you intend to send to clients.
 
 ```csharp
 _mockMessageClient.Verify(mc => mc.ReceiveMessage(It.Is<Message>(m => ..., Times.Once);
 ```
 
 #### UnitTest (non strongly typed Hub)
-- It is still doable to verify the message which you send, just it is not as elegant as the strongly-typed version.
+- It is still possible to verify the message you send, but it is not as elegant as the strongly-typed version.
 
 ```csharp
 _mockClients.Verify(clients => clients.All, Times.Once);
@@ -59,7 +59,7 @@ _mockClientProxy.Verify(clientProxy =>
 #### IntegrationTest
 - Using the built-in `TestServer` like in my [PlayingWithTestHost](https://github.com/19balazs86/PlayingWithTestHost) repository.
 - Bypassing ASP.NET Core authorization in integration tests.
-- We also can gain an advantage by leveraging the interfaces with the `nameof` operator.
+- Leveraging the interfaces with the `nameof` operator can also be advantageous for us.
 
 ```csharp
 // Subscribe for a message.

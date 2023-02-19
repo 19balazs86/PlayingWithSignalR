@@ -1,22 +1,52 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.AspNetCore.Authorization;
+using PlayingWithSignalR.Hubs;
 
-namespace PlayingWithSignalR
+namespace PlayingWithSignalR;
+
+public sealed class Program
 {
-  public class Program
-  {
     public static void Main(string[] args)
     {
-      CreateHostBuilder(args).Build().Run();
-    }
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        IServiceCollection services   = builder.Services;
 
-    public static IHostBuilder CreateHostBuilder(string[] args)
-    {
-      return Host
-        .CreateDefaultBuilder(args)
-        .ConfigureWebHostDefaults(webHostBuilder =>
-          webHostBuilder
-            .UseStartup<Startup>());
+        // Add services to the container
+        {
+            services.AddControllers();
+
+            services.AddJwtAuthentication();
+
+            services.AddSignalR(options => options.EnableDetailedErrors = true);
+
+            services.AddAuthorization(options =>
+            {
+                // https://docs.microsoft.com/en-ie/aspnet/core/migration/22-to-30?view=aspnetcore-3.0&tabs=visual-studio#authorization
+                // FallbackPolicy is initially configured to allow requests without authorization.
+                // Override it to always require authentication on all endpoints except when [AllowAnonymous].
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
+        }
+
+        WebApplication app = builder.Build();
+
+        // Configure the HTTP request pipeline
+        {
+            app.UseDeveloperExceptionPage();
+
+            app.UseRouting();
+
+            //app.UseSignalRClientMiddleware();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.MapControllers();
+
+            app.MapHub<MessageHub>(MessageHub.Path);
+        }
+
+        app.Run();
     }
-  }
 }

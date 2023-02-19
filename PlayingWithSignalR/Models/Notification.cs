@@ -1,7 +1,6 @@
-﻿namespace PlayingWithSignalR.Models
+﻿namespace PlayingWithSignalR.Models;
+
+public sealed class Notification
 {
-  public class Notification
-  {
     public string Message { get; set; }
-  }
 }

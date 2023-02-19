@@ -1,15 +1,13 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.TestHost;
 using PlayingWithSignalR.Infrastructure;
 using PlayingWithSignalR.Models;
 using Xunit;
 
-namespace IntegrationTest
+namespace IntegrationTest;
+
+public class IntegrationTestBase : IClassFixture<WebApiFactory>
 {
-  public class IntegrationTestBase : IClassFixture<WebApiFactory>
-  {
     private readonly WebApiFactory _webApiFactory;
 
     protected HttpClient _httpClient => _webApiFactory.HttpClient;
@@ -20,27 +18,26 @@ namespace IntegrationTest
 
     public IntegrationTestBase(WebApiFactory factory)
     {
-      _webApiFactory = factory;
+        _webApiFactory = factory;
 
-      _testUser = null;
+        _testUser = null;
     }
 
     protected virtual async Task<HubConnection> getHubConnectionAsync(string hubName, UserModel user)
     {
-      HubConnection hubConnection = new HubConnectionBuilder()
-        .WithUrl($"http://localhost{hubName}", options =>
-        {
-          options.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
-          options.AccessTokenProvider       = () => getToken(user);
-        })
-        .Build();
+        HubConnection hubConnection = new HubConnectionBuilder()
+            .WithUrl($"http://localhost{hubName}", options =>
+            {
+                options.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
+                options.AccessTokenProvider = () => getToken(user);
+            })
+            .Build();
 
-      await hubConnection.StartAsync();
+        await hubConnection.StartAsync();
 
-      return hubConnection;
+        return hubConnection;
     }
 
     private static Task<string> getToken(UserModel user)
-      => Task.FromResult(TokenFactory.CreateToken(user.ToClaims()));
-  }
+        => Task.FromResult(TokenFactory.CreateToken(user.ToClaims()));
 }

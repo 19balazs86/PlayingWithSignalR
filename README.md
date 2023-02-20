@@ -8,6 +8,7 @@ This is a .Net Web API example to build back-end [SignalR](https://docs.microsof
 - [SignalR samples](https://github.com/aspnet/AzureSignalR-samples) 👤*aspnet*
 - [Practical ASP.NET Core SignalR](https://codeopinion.com/practical-asp-net-core-signalr) 📓*CodeOpinion*
 - [SignalR: To Chat and Beyond](https://www.youtube.com/watch?v=i3RXbOY6-0I) 📽️*52m - David Pine presentation*
+- [TypedSignalR.Client](https://github.com/nenoNaninu/TypedSignalR.Client) 👤*nenoNaninu*
 
 #### MessageHub
 - The web application has a simple and strongly-typed Hub definition named `IMessageClient`, which implements the `IMessageHub` interface.

@@ -10,7 +10,7 @@ public static class TokenFactory
     private static readonly string _issuer   = "http://localhost:5000";
     private static readonly string _audience = "http://localhost:5000";
 
-    private static SecurityKey _securityKeySymm = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@345"));
+    private static SecurityKey _securityKeySymm = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey_WhichIsEnoughLong@345"));
 
     private static readonly SigningCredentials _signingCredential =
         new SigningCredentials(_securityKeySymm, SecurityAlgorithms.HmacSha256);

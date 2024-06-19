@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Net.Http.Headers;
 
 namespace PlayingWithSignalR;
 
-public static class ExceptionMiddlewareExtensions
+public static class SignalRClientMiddlewareExtensions
 {
     public static IApplicationBuilder UseSignalRClientMiddleware(this IApplicationBuilder app)
         => app.UseMiddleware<SignalRClientMiddleware>();
@@ -25,7 +24,7 @@ public sealed class SignalRClientMiddleware
         if (request.Path.StartsWithSegments("/hub", StringComparison.OrdinalIgnoreCase) &&
             request.Query.TryGetValue("access_token", out var accessToken))
         {
-            request.Headers.Add(HeaderNames.Authorization, $"{JwtBearerDefaults.AuthenticationScheme} {accessToken}");
+            request.Headers.Authorization.Append($"{JwtBearerDefaults.AuthenticationScheme} {accessToken}");
         }
 
         await _next(httpContext);

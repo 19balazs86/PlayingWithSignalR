@@ -18,15 +18,13 @@ public sealed class Program
 
             services.AddSignalR(options => options.EnableDetailedErrors = true);
 
-            services.AddAuthorization(options =>
-            {
-                // https://docs.microsoft.com/en-ie/aspnet/core/migration/22-to-30?view=aspnetcore-3.0&tabs=visual-studio#authorization
-                // FallbackPolicy is initially configured to allow requests without authorization.
-                // Override it to always require authentication on all endpoints except when [AllowAnonymous].
-                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            // --> Configure: Authorization
+            // FallbackPolicy, by default, is configured to allow requests without authorization.
+            // With the following configuration, requires authentication on all endpoints except when [AllowAnonymous].
+            services.AddAuthorizationBuilder() // .AddAuthorization() is applied with this line
+                .SetFallbackPolicy(new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
-                    .Build();
-            });
+                    .Build());
         }
 
         WebApplication app = builder.Build();

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.SignalR.Client;
 using PlayingWithSignalR.Hubs;
 using PlayingWithSignalR.Models;
+using System.Net.Http.Json;
 using TypedSignalR.Client;
 using Xunit;
 

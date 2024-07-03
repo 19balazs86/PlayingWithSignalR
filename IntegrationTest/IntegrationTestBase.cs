@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.AspNetCore.TestHost;
+using PlayingWithSignalR.Hubs;
 using PlayingWithSignalR.Infrastructure;
 using PlayingWithSignalR.Models;
 using Xunit;
@@ -23,10 +24,12 @@ public class IntegrationTestBase : IClassFixture<WebApiFactory>
         _testUser = null;
     }
 
-    protected virtual async Task<HubConnection> getHubConnectionAsync(string hubName, UserModel user)
+    protected virtual async Task<HubConnection> getHubConnectionAsync(UserModel user)
     {
+        const string url = $"http://localhost{MessageHub.Path}";
+
         HubConnection hubConnection = new HubConnectionBuilder()
-            .WithUrl($"http://localhost{hubName}", options =>
+            .WithUrl(url, options =>
             {
                 options.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
                 options.AccessTokenProvider = () => getToken(user);
@@ -34,6 +37,8 @@ public class IntegrationTestBase : IClassFixture<WebApiFactory>
             .Build();
 
         await hubConnection.StartAsync();
+
+        // hubConnection.ConnectionId
 
         return hubConnection;
     }

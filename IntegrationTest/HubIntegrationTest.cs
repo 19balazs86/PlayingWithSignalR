@@ -21,8 +21,8 @@ public sealed class HubIntegrationTest : IntegrationTestBase
         var countdownEvent      = new CountdownEvent(2);
         Message receivedMessage = null;
 
-        HubConnection connection1 = await getHubConnectionAsync(TestUsers.User1);
-        HubConnection connection2 = await getHubConnectionAsync(TestUsers.User2);
+        await using HubConnection connection1 = await getHubConnectionAsync(TestUsers.User1);
+        await using HubConnection connection2 = await getHubConnectionAsync(TestUsers.User2);
 
         connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), msg =>
         {
@@ -53,9 +53,9 @@ public sealed class HubIntegrationTest : IntegrationTestBase
         int counter = 0;
         Message receivedMessage = null;
 
-        HubConnection connection1   = await getHubConnectionAsync(TestUsers.User1);
-        HubConnection connection2_1 = await getHubConnectionAsync(TestUsers.User2);
-        HubConnection connection2_2 = await getHubConnectionAsync(TestUsers.User2);
+        await using HubConnection connection1   = await getHubConnectionAsync(TestUsers.User1);
+        await using HubConnection connection2_1 = await getHubConnectionAsync(TestUsers.User2);
+        await using HubConnection connection2_2 = await getHubConnectionAsync(TestUsers.User2);
 
         connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _     => Interlocked.Increment(ref counter)); // +0.
         connection2_1.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => receivedMessage = msg);
@@ -86,8 +86,8 @@ public sealed class HubIntegrationTest : IntegrationTestBase
         var countdownEvent      = new CountdownEvent(2);
         Message receivedMessage = null;
 
-        HubConnection connection1 = await getHubConnectionAsync(TestUsers.User1);
-        HubConnection connection2 = await getHubConnectionAsync(TestUsers.User2);
+        await using HubConnection connection1 = await getHubConnectionAsync(TestUsers.User1);
+        await using HubConnection connection2 = await getHubConnectionAsync(TestUsers.User2);
 
         connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => countdownEvent.Signal());
         connection2.On<Message>(nameof(IMessageClient.ReceiveMessage), msg =>
@@ -110,7 +110,4 @@ public sealed class HubIntegrationTest : IntegrationTestBase
         Assert.Equal(_testUser.Name,       receivedMessage.UserName);
         Assert.False(receivedMessage.IsPrivate);
     }
-
-    private Task<HubConnection> getHubConnectionAsync(UserModel user)
-        => getHubConnectionAsync(MessageHub.Path, user);
 }

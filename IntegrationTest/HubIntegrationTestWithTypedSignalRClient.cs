@@ -138,7 +138,4 @@ public sealed class HubIntegrationTestWithTypedSignalRClient : IntegrationTestBa
         Assert.Equal(TestUsers.User1.Name, receiverUser1.ReceivedMessage.UserName);
         Assert.False(receiverUser1.ReceivedMessage.IsPrivate);
     }
-
-    private Task<HubConnection> getHubConnectionAsync(UserModel user)
-        => getHubConnectionAsync(MessageHub.Path, user);
 }

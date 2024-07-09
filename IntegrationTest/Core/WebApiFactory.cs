@@ -2,7 +2,7 @@
 using PlayingWithSignalR;
 using PlayingWithSignalR.Models;
 
-namespace IntegrationTest;
+namespace IntegrationTest.Core;
 
 public sealed class WebApiFactory : WebApplicationFactory<Program>
 {

@@ -3,7 +3,7 @@ using PlayingWithSignalR.Infrastructure;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 
-namespace IntegrationTest;
+namespace IntegrationTest.Core;
 
 public sealed class AuthDelegatingHandler : DelegatingHandler
 {

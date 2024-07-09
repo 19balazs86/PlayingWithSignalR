@@ -1,3 +1,4 @@
+using IntegrationTest.Core;
 using Microsoft.AspNetCore.SignalR.Client;
 using PlayingWithSignalR.Hubs;
 using PlayingWithSignalR.Models;
@@ -21,8 +22,8 @@ public sealed class HubIntegrationTest : IntegrationTestBase
         var countdownEvent      = new CountdownEvent(2);
         Message receivedMessage = null;
 
-        await using HubConnection connection1 = await getHubConnectionAsync(TestUsers.User1);
-        await using HubConnection connection2 = await getHubConnectionAsync(TestUsers.User2);
+        await using HubConnection connection1 = await getHubConnectionAsync(DummyUsers.User1);
+        await using HubConnection connection2 = await getHubConnectionAsync(DummyUsers.User2);
 
         connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), msg =>
         {
@@ -35,14 +36,14 @@ public sealed class HubIntegrationTest : IntegrationTestBase
         // Act
         await connection1.InvokeAsync(nameof(IMessageHub.SendMessageToAll), _messageToSend);
 
-        countdownEvent.Wait(1000);
+        bool isCountdownSet = countdownEvent.Wait(1_000);
 
         // Assert
-        Assert.Equal(0, countdownEvent.CurrentCount);
+        Assert.True(isCountdownSet); // Assert.Equal(0, countdownEvent.CurrentCount);
         Assert.NotNull(receivedMessage);
         Assert.Equal(_messageToSend,       receivedMessage.Text);
-        Assert.Equal(TestUsers.User1.Id,   receivedMessage.UserId);
-        Assert.Equal(TestUsers.User1.Name, receivedMessage.UserName);
+        Assert.Equal(DummyUsers.User1.Id,   receivedMessage.UserId);
+        Assert.Equal(DummyUsers.User1.Name, receivedMessage.UserName);
         Assert.False(receivedMessage.IsPrivate);
     }
 
@@ -53,16 +54,16 @@ public sealed class HubIntegrationTest : IntegrationTestBase
         int counter = 0;
         Message receivedMessage = null;
 
-        await using HubConnection connection1   = await getHubConnectionAsync(TestUsers.User1);
-        await using HubConnection connection2_1 = await getHubConnectionAsync(TestUsers.User2);
-        await using HubConnection connection2_2 = await getHubConnectionAsync(TestUsers.User2);
+        await using HubConnection connection1   = await getHubConnectionAsync(DummyUsers.User1);
+        await using HubConnection connection2_1 = await getHubConnectionAsync(DummyUsers.User2);
+        await using HubConnection connection2_2 = await getHubConnectionAsync(DummyUsers.User2);
 
         connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _     => Interlocked.Increment(ref counter)); // +0.
         connection2_1.On<Message>(nameof(IMessageClient.ReceiveMessage), msg => receivedMessage = msg);
         connection2_2.On<Message>(nameof(IMessageClient.ReceiveMessage), _   => Interlocked.Increment(ref counter)); // +1
 
         // Act: User1 send a private message to User2, who has 2 connections.
-        await connection1.InvokeAsync(nameof(IMessageHub.SendPrivateMessage), TestUsers.User2.Id, _messageToSend);
+        await connection1.InvokeAsync(nameof(IMessageHub.SendPrivateMessage), DummyUsers.User2.Id, _messageToSend);
 
         await Task.Delay(100); // Waiting for the message to arrive.
 
@@ -70,8 +71,8 @@ public sealed class HubIntegrationTest : IntegrationTestBase
         Assert.Equal(1, counter); // User1 did not get message.
         Assert.NotNull(receivedMessage);
         Assert.Equal(_messageToSend,       receivedMessage.Text);
-        Assert.Equal(TestUsers.User1.Id,   receivedMessage.UserId);
-        Assert.Equal(TestUsers.User1.Name, receivedMessage.UserName);
+        Assert.Equal(DummyUsers.User1.Id,   receivedMessage.UserId);
+        Assert.Equal(DummyUsers.User1.Name, receivedMessage.UserName);
         Assert.True(receivedMessage.IsPrivate);
     }
 
@@ -79,15 +80,15 @@ public sealed class HubIntegrationTest : IntegrationTestBase
     public async Task NotificationController()
     {
         // Arrange
-        _testUser = TestUsers.User1;
+        _testUser = DummyUsers.User1;
 
         var notification = new Notification { Message = _messageToSend };
 
         var countdownEvent      = new CountdownEvent(2);
         Message receivedMessage = null;
 
-        await using HubConnection connection1 = await getHubConnectionAsync(TestUsers.User1);
-        await using HubConnection connection2 = await getHubConnectionAsync(TestUsers.User2);
+        await using HubConnection connection1 = await getHubConnectionAsync(DummyUsers.User1);
+        await using HubConnection connection2 = await getHubConnectionAsync(DummyUsers.User2);
 
         connection1.On<Message>(nameof(IMessageClient.ReceiveMessage), _ => countdownEvent.Signal());
         connection2.On<Message>(nameof(IMessageClient.ReceiveMessage), msg =>
@@ -99,9 +100,10 @@ public sealed class HubIntegrationTest : IntegrationTestBase
         // Act: User1 initiates an HTTP call to send a notification for everyone.
         using HttpResponseMessage response = await _httpClient.PostAsJsonAsync("Notification", notification);
 
-        countdownEvent.Wait(1000);
+        bool isCountdownSet = countdownEvent.Wait(1_000);
 
         // Assert
+        Assert.True(isCountdownSet);
         Assert.True(response.IsSuccessStatusCode);
         Assert.Equal(0, countdownEvent.CurrentCount);
         Assert.NotNull(receivedMessage);

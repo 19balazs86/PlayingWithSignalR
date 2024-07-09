@@ -5,7 +5,7 @@ using PlayingWithSignalR.Infrastructure;
 using PlayingWithSignalR.Models;
 using Xunit;
 
-namespace IntegrationTest;
+namespace IntegrationTest.Core;
 
 public class IntegrationTestBase : IClassFixture<WebApiFactory>
 {

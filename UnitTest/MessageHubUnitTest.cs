@@ -48,7 +48,7 @@ public sealed class MessageHubUnitTest
     }
 
     [Fact]
-    public async Task SendMessageToAll()
+    public async Task Verify_ReceiveMessage_When_non_private_message_sent()
     {
         // Act
         await SUT.SendMessageToAll(_messageText);
@@ -58,7 +58,7 @@ public sealed class MessageHubUnitTest
     }
 
     [Fact]
-    public async Task SendPrivateMessage()
+    public async Task Verify_ReceiveMessage_When_private_message_sent()
     {
         Guid toUserId = Guid.NewGuid();
 
@@ -70,8 +70,7 @@ public sealed class MessageHubUnitTest
         await SUT.SendPrivateMessage(toUserId, _messageText);
 
         // Assert
-        _mockMessageClient.Verify(mc =>
-        mc.ReceiveMessage(It.Is<Message>(m => checkMessage(m, true))), Times.Once);
+        _mockMessageClient.Verify(mc => mc.ReceiveMessage(It.Is<Message>(m => checkMessage(m, true))), Times.Once);
     }
 
     private bool checkMessage(Message m, bool isPrivate)

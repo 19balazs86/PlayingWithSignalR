@@ -41,7 +41,7 @@ public sealed class NonStronglyTypedHubTest
     }
 
     [Fact]
-    public async Task SendMessageToAll()
+    public async Task Verify_ReceiveMessage_When_message_sent()
     {
         // Act
         await SUT.SendMessageToAll(_messageText);

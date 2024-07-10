@@ -38,7 +38,7 @@ public sealed class HubIntegrationTestWithTypedSignalRClient : IntegrationTestBa
     }
 
     [Fact]
-    public async Task SendMessageToAll()
+    public async Task Should_all_users_receive_message_When_user_sends_it()
     {
         // Arrange
         var countdownEvent = new CountdownEvent(2);
@@ -63,19 +63,19 @@ public sealed class HubIntegrationTestWithTypedSignalRClient : IntegrationTestBa
         Assert.True(isCountdownSet); // Assert.Equal(0, countdownEvent.CurrentCount);
         Assert.NotNull(receiverUser1.ReceivedMessage);
         Assert.NotNull(receiverUser2.ReceivedMessage);
-        Assert.Equal(_messageToSend,       receiverUser1.ReceivedMessage.Text);
+        Assert.Equal(_messageToSend,        receiverUser1.ReceivedMessage.Text);
         Assert.Equal(DummyUsers.User1.Id,   receiverUser1.ReceivedMessage.UserId);
         Assert.Equal(DummyUsers.User1.Name, receiverUser1.ReceivedMessage.UserName);
         Assert.False(receiverUser1.ReceivedMessage.IsPrivate);
     }
 
     [Fact]
-    public async Task SendPrivateMessage()
+    public async Task Should_addressee_receive_message_When_private_message_is_sent()
     {
         // Arrange
         var countdownEvent = new CountdownEvent(2);
 
-        await using HubConnection connection1 = await getHubConnectionAsync(DummyUsers.User1);
+        await using HubConnection connection1   = await getHubConnectionAsync(DummyUsers.User1);
         await using HubConnection connection2_1 = await getHubConnectionAsync(DummyUsers.User2);
         await using HubConnection connection2_2 = await getHubConnectionAsync(DummyUsers.User2);
 
@@ -99,14 +99,14 @@ public sealed class HubIntegrationTestWithTypedSignalRClient : IntegrationTestBa
         Assert.Null(receiverUser1.ReceivedMessage);
         Assert.NotNull(receiverUser2_1.ReceivedMessage);
         Assert.NotNull(receiverUser2_2.ReceivedMessage);
-        Assert.Equal(_messageToSend,       receiverUser2_1.ReceivedMessage.Text);
+        Assert.Equal(_messageToSend,        receiverUser2_1.ReceivedMessage.Text);
         Assert.Equal(DummyUsers.User1.Id,   receiverUser2_1.ReceivedMessage.UserId);
         Assert.Equal(DummyUsers.User1.Name, receiverUser2_1.ReceivedMessage.UserName);
         Assert.True(receiverUser2_1.ReceivedMessage.IsPrivate);
     }
 
     [Fact]
-    public async Task NotificationController()
+    public async Task Should_notify_all_users_When_WebAPI_notification_is_called()
     {
         // Arrange
         _testUser = DummyUsers.User1;
@@ -135,7 +135,7 @@ public sealed class HubIntegrationTestWithTypedSignalRClient : IntegrationTestBa
         Assert.Equal(0, countdownEvent.CurrentCount);
         Assert.NotNull(receiverUser1.ReceivedMessage);
         Assert.NotNull(receiverUser2.ReceivedMessage);
-        Assert.Equal(_messageToSend,       receiverUser1.ReceivedMessage.Text);
+        Assert.Equal(_messageToSend,        receiverUser1.ReceivedMessage.Text);
         Assert.Equal(DummyUsers.User1.Id,   receiverUser1.ReceivedMessage.UserId);
         Assert.Equal(DummyUsers.User1.Name, receiverUser1.ReceivedMessage.UserName);
         Assert.False(receiverUser1.ReceivedMessage.IsPrivate);

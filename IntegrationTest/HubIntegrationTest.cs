@@ -16,7 +16,7 @@ public sealed class HubIntegrationTest : IntegrationTestBase
     }
 
     [Fact]
-    public async Task SendMessageToAll()
+    public async Task Should_all_users_receive_message_When_user_sends_it()
     {
         // Arrange
         var countdownEvent      = new CountdownEvent(2);
@@ -41,14 +41,14 @@ public sealed class HubIntegrationTest : IntegrationTestBase
         // Assert
         Assert.True(isCountdownSet); // Assert.Equal(0, countdownEvent.CurrentCount);
         Assert.NotNull(receivedMessage);
-        Assert.Equal(_messageToSend,       receivedMessage.Text);
+        Assert.Equal(_messageToSend,        receivedMessage.Text);
         Assert.Equal(DummyUsers.User1.Id,   receivedMessage.UserId);
         Assert.Equal(DummyUsers.User1.Name, receivedMessage.UserName);
         Assert.False(receivedMessage.IsPrivate);
     }
 
     [Fact]
-    public async Task SendPrivateMessage()
+    public async Task Should_addressee_receive_message_When_private_message_is_sent()
     {
         // Arrange
         int counter = 0;
@@ -70,14 +70,14 @@ public sealed class HubIntegrationTest : IntegrationTestBase
         // Assert
         Assert.Equal(1, counter); // User1 did not get message.
         Assert.NotNull(receivedMessage);
-        Assert.Equal(_messageToSend,       receivedMessage.Text);
+        Assert.Equal(_messageToSend,        receivedMessage.Text);
         Assert.Equal(DummyUsers.User1.Id,   receivedMessage.UserId);
         Assert.Equal(DummyUsers.User1.Name, receivedMessage.UserName);
         Assert.True(receivedMessage.IsPrivate);
     }
 
     [Fact]
-    public async Task NotificationController()
+    public async Task Should_notify_all_users_When_WebAPI_notification_is_called()
     {
         // Arrange
         _testUser = DummyUsers.User1;

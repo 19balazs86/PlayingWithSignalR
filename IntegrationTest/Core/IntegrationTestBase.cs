@@ -11,6 +11,8 @@ public class IntegrationTestBase : IClassFixture<WebApiFactory>
 {
     private readonly WebApiFactory _webApiFactory;
 
+    private readonly Uri _hubUrl;
+
     protected HttpClient _httpClient => _webApiFactory.HttpClient;
 
     protected TestServer _testServer => _webApiFactory.Server;
@@ -22,14 +24,15 @@ public class IntegrationTestBase : IClassFixture<WebApiFactory>
         _webApiFactory = factory;
 
         _testUser = null;
+
+        _hubUrl = new Uri(_testServer.BaseAddress, MessageHub.Path);
     }
 
     protected virtual async Task<HubConnection> getHubConnectionAsync(UserModel user)
     {
-        const string url = $"http://localhost{MessageHub.Path}";
-
+        // To improve performance, connections can be stored in a dictionary by user ID. Remember to keep the connection open in each tests.
         HubConnection hubConnection = new HubConnectionBuilder()
-            .WithUrl(url, options =>
+            .WithUrl(_hubUrl, options =>
             {
                 options.HttpMessageHandlerFactory = _ => _testServer.CreateHandler();
                 options.AccessTokenProvider = () => getToken(user);

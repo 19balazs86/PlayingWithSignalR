@@ -25,6 +25,8 @@ public sealed class Program
                 .SetFallbackPolicy(new AuthorizationPolicyBuilder()
                     .RequireAuthenticatedUser()
                     .Build());
+
+            // OpenTelemetry: AddAspNetCoreInstrumentation and tracing.AddSource("Microsoft.AspNetCore.SignalR.Server")
         }
 
         WebApplication app = builder.Build();

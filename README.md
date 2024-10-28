@@ -1,17 +1,17 @@
 # Playing with SignalR
 
-This is a .Net Web API example to build back-end [SignalR](https://docs.microsoft.com/en-ie/aspnet/core/signalr/introduction?view=aspnetcore-3.0) service.
+This is a .NET Web API example for building a back-end [SignalR](https://docs.microsoft.com/en-ie/aspnet/core/signalr/introduction) service
 
-[Separate branch](https://github.com/19balazs86/PlayingWithSignalR/tree/netcoreapp2.2) with the .NET Core 2.2 version.
-
-#### Resources
+## Resources
 - [SignalR samples](https://github.com/aspnet/AzureSignalR-samples) 👤*aspnet*
 - [Practical ASP.NET Core SignalR](https://codeopinion.com/practical-asp-net-core-signalr) 📓*CodeOpinion*
 - [SignalR: To Chat and Beyond](https://www.youtube.com/watch?v=i3RXbOY6-0I) 📽️*52m - David Pine presentation*
 - [TypedSignalR.Client](https://github.com/nenoNaninu/TypedSignalR.Client) 👤*nenoNaninu*
 - [Creating sticky notes Blazor WASM application](https://kristoffer-strube.dk/post/typed-signalr-clients-making-type-safe-real-time-communication-in-dotnet) 📓*Kristoffer Strube - Typed SignalR clients using SourceGenerator*
 
-#### MessageHub
+## Code examples
+
+### MessageHub
 - The web application has a simple and strongly-typed Hub definition named `IMessageClient`, which implements the `IMessageHub` interface.
 - Both interfaces make it easier to implement the hub and write unit and integration tests.
 - To connect to the Hub, authentication is required, and I have used JWT for this purpose.
@@ -37,14 +37,14 @@ public interface IMessageHub
 }
 ```
 
-#### UnitTest (strongly typed Hub)
+### UnitTest (strongly typed Hub)
 - Mocking the strongly typed Hub becomes easier, allowing you to validate the object you intend to send to clients.
 
 ```csharp
 _mockMessageClient.Verify(mc => mc.ReceiveMessage(It.Is<Message>(m => ..., Times.Once);
 ```
 
-#### UnitTest (non strongly typed Hub)
+### UnitTest (non strongly typed Hub)
 - It is still possible to verify the message you send, but it is not as elegant as the strongly-typed version.
 
 ```csharp
@@ -58,7 +58,7 @@ _mockClientProxy.Verify(clientProxy =>
     Times.Once);
 ```
 
-#### IntegrationTest
+### IntegrationTest
 - Using the built-in `TestServer` like in my [PlayingWithTestHost](https://github.com/19balazs86/PlayingWithTestHost) repository.
 - Bypassing ASP.NET Core authorization in integration tests.
 - Leveraging the interfaces with the `nameof` operator can also be advantageous for us.
